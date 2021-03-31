@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="member">
+
+	<select id="member_list" resultType="member">
+		<!--SQL문 작성 위에 resultType을 config에서 별칭을주고 짧게 -->
+		select * from member order by m_idx desc
+	</select>
+	
+	<!--  idx에 해당하는 1건 정보조회 -->
+	<select id="member_one_idx"  parameterType="int" resultType="member">
+		select * from member where m_idx=#{m_idx}
+	</select> 
+	
+	 <!-- id 정보조회  --> 
+	<select id="member_one_id"  parameterType="String" resultType="member">
+		select * from member where m_id=#{m_id}
+	</select>
+	
+	<!--입력  -->
+	 <insert id="member_insert" parameterType="member">
+	insert into member values(seq_member_idx.nextVal,
+							#{m_name},
+							#{m_id},
+							#{m_pwd},
+							#{m_zipcode},
+							#{m_addr},
+							'일반',
+							#{m_ip},
+							sysdate)
+		
+	</insert>
+	
+	<!-- 삭제 -->
+	<delete id="member_delete" parameterType="int" >
+		delete from member where m_idx=#{m_idx}
+	</delete>
+	
+	<!-- 수정 --> 
+	<update id="member_update" parameterType="member">
+		 update member set m_name=#{m_name},
+		 					m_id=#{m_id},
+		 					m_pwd=#{m_pwd},
+		 					m_zipcode=#{m_zipcode},
+		 					m_addr=#{m_addr},
+		 					m_grade=#{m_grade},
+		 					m_ip=#{m_ip},
+		 					m_regdate=sysdate 
+		 					where m_idx=#{m_idx}
+	</update>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
