@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+
+<select id="board_list" resultType="board">
+	select * from board order by b_idx desc
+</select>
+
+<select id="board_condition_list" parameterType="java.util.Map" resultType="vo.BoardVo">
+	select * from
+  		(
+  			select rank() over(order by b_idx desc) as no, b.*
+			from  (select * from board
+				<trim prefix="where" prefixOverrides="or">
+					<if test="name!=null">
+						m_nickname like '%' || #{name} || '%'
+					</if>
+					<if test="subject!=null">
+						or b_subject like '%' || #{subject} || '%'
+					</if>
+					<if test="content!=null">
+						or b_content like '%' || #{content} || '%'
+					</if>
+				</trim>
+				) b
+		)   
+	where no between #{start} and #{end}
+</select>
+
+<select id="board_row_total" parameterType="java.util.Map" resultType="int">
+	select nvl(count(*),0) from board 
+	<trim prefix="where" prefixOverrides="or">
+		<if test="name!=null">
+			m_nickname like '%' || #{name} || '%'
+		</if>
+		<if test="subject!=null">
+			or b_subject like '%' || #{subject} || '%'
+		</if>
+		<if test="content!=null">
+			or b_content like '%' || #{content} || '%'
+		</if>
+	</trim>
+</select>
+
+<select id="board_one" parameterType="int" resultType="board">
+	select * from board where b_idx = #{ b_idx }
+</select>
+
+<insert id="board_insert" parameterType="vo.BoardVo">
+	insert into board values
+	(
+		seq_board_idx.nextVal,
+		#{b_subject},#{b_content},#{b_ip},sysdate,0,0,
+		#{m_idx},#{m_nickname}
+	)
+</insert>
+
+<update id="board_update" parameterType="board">
+	update board set b_subject=#{b_subject}, b_content=#{b_content}, b_ip=#{b_ip},
+			b_regdate=sysdate where b_idx=#{b_idx}
+</update>
+
+<update id="board_update_readhit" parameterType="int">
+	update board set b_readhit=b_readhit+1 where b_idx=#{b_idx}
+</update>
+
+<update id="board_update_like" parameterType="int">
+	update board set b_like = b_like+1 where b_idx=#{b_idx}
+</update>
+
+<delete id="board_delete" parameterType="int">
+	delete board where b_idx=#{b_idx}
+</delete>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
